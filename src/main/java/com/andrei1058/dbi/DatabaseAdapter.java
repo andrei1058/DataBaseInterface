@@ -6,6 +6,7 @@ import com.andrei1058.dbi.operator.Operator;
 import com.andrei1058.dbi.table.Table;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.List;
 
 public interface DatabaseAdapter {
@@ -33,11 +34,21 @@ public interface DatabaseAdapter {
 
     void createTable(Table table, boolean drop);
 
-    /**
-     * What to do on duplicate primary key?
-     */
+    void set(Table table, Column<?> column, ColumnValue<?> value, Operator<?> where);
+
+    void set(Table table, HashMap<Column<?>, ColumnValue<?>> values, Operator<?> where);
+
     enum InsertFallback {
+        /**
+         * Replace existing data on primary key violation/ duplication.
+         * NOTE: SQLite equivalent is REPLACE.
+         */
         UPDATE,
+
+        /**
+         * Insert only valid data and ignore invalid values without throwing an error.
+         */
+        IGNORE,
 
     }
 }

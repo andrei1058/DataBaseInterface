@@ -10,7 +10,7 @@ public interface Column<T> {
 
     SqlColumnType getSqlType();
 
-    Object toExport();
+    Object toExport(Object value);
 
     T fromResult(Object o);
 }

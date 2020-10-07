@@ -13,6 +13,6 @@ public class EqualsOperator<T> implements Operator<T> {
     }
 
     public String toQuery() {
-        return a.getName() + "='" + b + "'";
+        return a.getName() + "='" + a.toExport(b)+"'";
     }
 }

@@ -28,8 +28,8 @@ public class UUIDColumn implements Column<UUID> {
     }
 
     @Override
-    public Object toExport() {
-        return defaultValue.toString();
+    public Object toExport(Object o) {
+        return o.toString();
     }
 
     @Override

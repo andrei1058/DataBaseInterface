@@ -48,7 +48,13 @@ public class SomeClass {
 
         // get data from db
         int kills = databaseAdapter.select(killsColumn, player_stats, new EqualsOperator<>(primaryKey, testUUID));
+        System.out.println("Kills: " + kills);
 
+        // change data
+        databaseAdapter.set(player_stats, killsColumn, new SimpleValue<>(killsColumn, 5), new EqualsOperator<>(primaryKey, testUUID));
+
+        // get data again
+        kills = databaseAdapter.select(killsColumn, player_stats, new EqualsOperator<>(primaryKey, testUUID));
         System.out.println("Kills: " + kills);
     }
 }

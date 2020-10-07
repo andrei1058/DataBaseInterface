@@ -7,6 +7,7 @@ import com.andrei1058.dbi.operator.Operator;
 import com.andrei1058.dbi.table.Table;
 
 import java.sql.*;
+import java.util.HashMap;
 import java.util.List;
 
 public class SQLiteAdapter implements DatabaseAdapter {
@@ -15,29 +16,14 @@ public class SQLiteAdapter implements DatabaseAdapter {
 
     public SQLiteAdapter() {
         try {
-            // create a database connection
-            //if (DriverManager.getDriver("sqlite") == null){
-            //    DriverManager.registerDriver(new org.sqlite.JDBC());
-            //}
             connection = DriverManager.getConnection("jdbc:sqlite:sample.db");
-            //statement.executeUpdate("insert into person values(2, 'yui')");
-            //ResultSet rs = statement.executeQuery("select * from person");
-            //while (rs.next()) {
-            // read the result set
-            //    System.out.println("name = " + rs.getString("name"));
-            //    System.out.println("id = " + rs.getInt("id"));
-            // }
         } catch (SQLException e) {
-            // if the error message is "out of memory",
-            // it probably means no database file is found
-            System.err.println(e.getMessage());
             e.printStackTrace();
         }
     }
 
     public <T> T select(Column<T> what, Table from, Operator<?> where) {
         String query = "SELECT " + what.getName() + " FROM " + from.getName() + " WHERE " + where.toQuery() + ";";
-        System.out.println(query);
         try (ResultSet rs = connection.createStatement().executeQuery(query)) {
             if (rs.next()) {
                 Object result = rs.getObject(what.getName());
@@ -50,27 +36,37 @@ public class SQLiteAdapter implements DatabaseAdapter {
     }
 
     public <T> List<T> select(Column<T> from, Table table, Operator<?> where, int limit) {
-        return null;
+        throw new IllegalStateException("Not implemented yet!");
     }
 
     @Override
     public <T> List<T> select(Column<T> from, Table table, Operator<?> where, int start, int limit) {
-        return null;
+        throw new IllegalStateException("Not implemented yet!");
+    }
+
+    @Override
+    public List<List<?>> selectAll(Column<?> from, Table table, Operator<?> where) {
+        throw new IllegalStateException("Not implemented yet!");
+    }
+
+    @Override
+    public List<List<?>> selectAll(Column<?> from, Table table, Operator<?> where, int start, int limit) {
+        throw new IllegalStateException("Not implemented yet!");
     }
 
     @Override
     public void insert(Table table, List<ColumnValue<?>> values, InsertFallback onFail) {
-        if (table.getColumns().isEmpty()){
+        if (table.getColumns().isEmpty()) {
             //todo throw empty table exception
             return;
         }
-        StringBuilder firstPart = new StringBuilder("INSERT INTO " + table.getName() +"(");
+        StringBuilder firstPart = new StringBuilder("INSERT INTO " + table.getName() + "(");
         StringBuilder secondPart = new StringBuilder("VALUES(");
         for (int i = 0; i < values.size(); i++) {
             ColumnValue<?> value = values.get(i);
             firstPart.append(value.getColumn().getName());
             secondPart.append("?");
-            if (i < values.size()-1){
+            if (i < values.size() - 1) {
                 firstPart.append(",");
                 secondPart.append(",");
             } else {
@@ -78,11 +74,10 @@ public class SQLiteAdapter implements DatabaseAdapter {
                 secondPart.append(");");
             }
         }
-        System.out.println(firstPart.append(secondPart).toString());
         try (PreparedStatement ps = connection.prepareStatement(firstPart.append(secondPart).toString())) {
             for (int i = 0; i < values.size(); i++) {
                 ColumnValue<?> value = values.get(i);
-                ps.setObject(i+1, value.getValue());
+                ps.setObject(i + 1, value.getValue());
             }
             ps.executeUpdate();
         } catch (SQLException exception) {
@@ -114,5 +109,20 @@ public class SQLiteAdapter implements DatabaseAdapter {
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
+    }
+
+    @Override
+    public void set(Table table, Column<?> column, ColumnValue<?> value, Operator<?> where) {
+        try (PreparedStatement statement = connection.prepareStatement("UPDATE `" + table.getName() + "` SET `" + column.getName() + "`=? WHERE " + where.toQuery())) {
+            statement.setObject(1, value.getColumn().toExport(value.getValue()));
+            statement.executeUpdate();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    @Override
+    public void set(Table table, HashMap<Column<?>, ColumnValue<?>> values, Operator<?> where) {
+        throw new IllegalStateException("Not implemented yet!");
     }
 }

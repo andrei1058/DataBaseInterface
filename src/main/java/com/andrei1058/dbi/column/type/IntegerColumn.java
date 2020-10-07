@@ -24,8 +24,8 @@ public class IntegerColumn implements Column<Integer> {
     }
 
     @Override
-    public Object toExport() {
-        return defaultValue;
+    public Object toExport(Object o) {
+        return o;
     }
 
     @Override
