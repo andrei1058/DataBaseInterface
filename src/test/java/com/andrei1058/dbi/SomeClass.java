@@ -11,6 +11,7 @@ import com.andrei1058.dbi.table.Table;
 import com.andrei1058.dbi.table.TableBuilder;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -21,7 +22,12 @@ public class SomeClass {
     public static void main(String[] args) {
 
         // database interface
-        DatabaseAdapter databaseAdapter = new SQLiteAdapter();
+        DatabaseAdapter databaseAdapter = null;
+        try {
+            databaseAdapter = new SQLiteAdapter("sample.db");
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
 
         // columns
         UUIDColumn primaryKey = new UUIDColumn("player_uuid", null);

@@ -12,14 +12,11 @@ import java.util.List;
 
 public class SQLiteAdapter implements DatabaseAdapter {
 
-    private Connection connection;
+    private final Connection connection;
 
-    public SQLiteAdapter() {
-        try {
-            connection = DriverManager.getConnection("jdbc:sqlite:sample.db");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    public SQLiteAdapter(String url) throws SQLException {
+        connection = DriverManager.getConnection("jdbc:sqlite:" + url);
+
     }
 
     public <T> T select(Column<T> what, Table from, Operator<?> where) {
