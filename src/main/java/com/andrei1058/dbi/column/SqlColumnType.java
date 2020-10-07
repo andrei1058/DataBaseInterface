@@ -1,15 +1,14 @@
 package com.andrei1058.dbi.column;
 
-public enum DataType {
+public enum SqlColumnType {
 
     INT("INT", "INTEGER"),
-    //todo not sure sqlite
-    STRING("VARCHAR", "VAR");
+    STRING("VARCHAR", "VARCHAR");
 
     private final String mysql;
     private final String sqlite;
 
-    DataType(String mysql, String sqlite) {
+    SqlColumnType(String mysql, String sqlite) {
         this.mysql = mysql;
         this.sqlite = sqlite;
     }

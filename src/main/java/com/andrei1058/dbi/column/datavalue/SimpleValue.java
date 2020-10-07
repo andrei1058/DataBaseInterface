@@ -1,13 +1,14 @@
-package com.andrei1058.dbi.insert;
+package com.andrei1058.dbi.column.datavalue;
 
 import com.andrei1058.dbi.column.Column;
+import com.andrei1058.dbi.column.ColumnValue;
 
-public class ColumnValue<T> implements IColumnValue<T> {
+public class SimpleValue<T> implements ColumnValue<T> {
 
     private final Column<T> a;
     private final T b;
 
-    public ColumnValue(Column<T> a, T b) {
+    public SimpleValue(Column<T> a, T b) {
         this.a = a;
         this.b = b;
     }

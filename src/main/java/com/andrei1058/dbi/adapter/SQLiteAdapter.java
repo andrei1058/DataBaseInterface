@@ -1,16 +1,19 @@
+package com.andrei1058.dbi.adapter;
+
+import com.andrei1058.dbi.DatabaseAdapter;
 import com.andrei1058.dbi.column.Column;
-import com.andrei1058.dbi.insert.IColumnValue;
+import com.andrei1058.dbi.column.ColumnValue;
 import com.andrei1058.dbi.operator.Operator;
 import com.andrei1058.dbi.table.Table;
 
 import java.sql.*;
 import java.util.List;
 
-public class InternalDatabaseAdapter implements DatabaseAdapter {
+public class SQLiteAdapter implements DatabaseAdapter {
 
     private Connection connection;
 
-    public InternalDatabaseAdapter() {
+    public SQLiteAdapter() {
         try {
             // create a database connection
             //if (DriverManager.getDriver("sqlite") == null){
@@ -51,7 +54,12 @@ public class InternalDatabaseAdapter implements DatabaseAdapter {
     }
 
     @Override
-    public void insert(Table table, List<IColumnValue<?>> values) {
+    public <T> List<T> select(Column<T> from, Table table, Operator<?> where, int start, int limit) {
+        return null;
+    }
+
+    @Override
+    public void insert(Table table, List<ColumnValue<?>> values, InsertFallback onFail) {
         if (table.getColumns().isEmpty()){
             //todo throw empty table exception
             return;
@@ -59,7 +67,7 @@ public class InternalDatabaseAdapter implements DatabaseAdapter {
         StringBuilder firstPart = new StringBuilder("INSERT INTO " + table.getName() +"(");
         StringBuilder secondPart = new StringBuilder("VALUES(");
         for (int i = 0; i < values.size(); i++) {
-            IColumnValue<?> value = values.get(i);
+            ColumnValue<?> value = values.get(i);
             firstPart.append(value.getColumn().getName());
             secondPart.append("?");
             if (i < values.size()-1){
@@ -73,7 +81,7 @@ public class InternalDatabaseAdapter implements DatabaseAdapter {
         System.out.println(firstPart.append(secondPart).toString());
         try (PreparedStatement ps = connection.prepareStatement(firstPart.append(secondPart).toString())) {
             for (int i = 0; i < values.size(); i++) {
-                IColumnValue<?> value = values.get(i);
+                ColumnValue<?> value = values.get(i);
                 ps.setObject(i+1, value.getValue());
             }
             ps.executeUpdate();

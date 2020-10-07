@@ -1,4 +1,7 @@
-package com.andrei1058.dbi.column;
+package com.andrei1058.dbi.column.type;
+
+import com.andrei1058.dbi.column.Column;
+import com.andrei1058.dbi.column.SqlColumnType;
 
 import java.util.UUID;
 
@@ -20,8 +23,8 @@ public class UUIDColumn implements Column<UUID> {
         return name;
     }
 
-    public DataType getSqlType() {
-        return DataType.STRING;
+    public SqlColumnType getSqlType() {
+        return SqlColumnType.STRING;
     }
 
     @Override

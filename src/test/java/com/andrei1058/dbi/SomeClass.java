@@ -1,11 +1,15 @@
+package com.andrei1058.dbi;
 
-import com.andrei1058.dbi.column.IntegerColumn;
-import com.andrei1058.dbi.column.UUIDColumn;
-import com.andrei1058.dbi.insert.ColumnValue;
-import com.andrei1058.dbi.insert.IColumnValue;
+import com.andrei1058.dbi.DatabaseAdapter;
+import com.andrei1058.dbi.adapter.SQLiteAdapter;
+import com.andrei1058.dbi.column.type.IntegerColumn;
+import com.andrei1058.dbi.column.type.UUIDColumn;
+import com.andrei1058.dbi.column.datavalue.SimpleValue;
+import com.andrei1058.dbi.column.ColumnValue;
 import com.andrei1058.dbi.operator.EqualsOperator;
 import com.andrei1058.dbi.table.Table;
 import com.andrei1058.dbi.table.TableBuilder;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,10 +17,11 @@ import java.util.UUID;
 
 public class SomeClass {
 
+    @Test
     public static void main(String[] args) {
 
         // database interface
-        DatabaseAdapter databaseAdapter = new InternalDatabaseAdapter();
+        DatabaseAdapter databaseAdapter = new SQLiteAdapter();
 
         // columns
         UUIDColumn primaryKey = new UUIDColumn("player_uuid", null);
@@ -36,9 +41,9 @@ public class SomeClass {
         UUID testUUID = UUID.fromString("c252c59e-dd51-44f6-9697-89ac6a88e6a1");
 
         // insert
-        List<IColumnValue<?>> values = new ArrayList<>();
-        values.add(new ColumnValue<>(primaryKey, testUUID));
-        values.add(new ColumnValue<>(killsColumn, 4));
+        List<ColumnValue<?>> values = new ArrayList<>();
+        values.add(new SimpleValue<>(primaryKey, testUUID));
+        values.add(new SimpleValue<>(killsColumn, 4));
         databaseAdapter.insert(player_stats, values);
 
         // get data from db

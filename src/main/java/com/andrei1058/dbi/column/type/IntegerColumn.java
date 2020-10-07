@@ -1,4 +1,7 @@
-package com.andrei1058.dbi.column;
+package com.andrei1058.dbi.column.type;
+
+import com.andrei1058.dbi.column.Column;
+import com.andrei1058.dbi.column.SqlColumnType;
 
 public class IntegerColumn implements Column<Integer> {
 
@@ -16,8 +19,8 @@ public class IntegerColumn implements Column<Integer> {
         return name;
     }
 
-    public DataType getSqlType() {
-        return DataType.INT;
+    public SqlColumnType getSqlType() {
+        return SqlColumnType.INT;
     }
 
     @Override

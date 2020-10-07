@@ -8,7 +8,7 @@ public interface Column<T> {
 
     T getDefaultValue();
 
-    DataType getSqlType();
+    SqlColumnType getSqlType();
 
     Object toExport();
 
