@@ -62,5 +62,7 @@ public class SomeClass {
         // get data again
         kills = databaseAdapter.select(killsColumn, player_stats, new EqualsOperator<>(primaryKey, testUUID));
         System.out.println("Kills: " + kills);
+
+        //
     }
 }

@@ -3,7 +3,8 @@ package com.andrei1058.dbi.column;
 public enum SqlColumnType {
 
     INT("INT", "INTEGER"),
-    STRING("VARCHAR", "VARCHAR");
+    STRING("VARCHAR", "VARCHAR"),
+    DATE("DATE", "DATE");
 
     private final String mysql;
     private final String sqlite;
