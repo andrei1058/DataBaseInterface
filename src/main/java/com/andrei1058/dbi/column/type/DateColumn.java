@@ -41,7 +41,7 @@ public class DateColumn implements Column<Date> {
     }
 
     @Override
-    public Date fromResult(Object o) {
+    public Date castResult(Object o) {
         return (Date) o;
     }
 }

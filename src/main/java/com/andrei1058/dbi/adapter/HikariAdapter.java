@@ -72,12 +72,12 @@ public class HikariAdapter implements DatabaseAdapter {
     }
 
     @Override
-    public List<List<?>> selectColumn(Column<?> from, Table table, Operator<?> where) {
+    public HashMap<Column<?>, ?> selectRow(Table table, Operator<?> where) {
         throw new IllegalStateException("Not supported yet");
     }
 
     @Override
-    public List<List<?>> selectColumn(Column<?> from, Table table, Operator<?> where, int start, int limit) {
+    public List<List<ColumnValue<?>>> selectRows(Column<?> from, Table table, Operator<?> where, int start, int limit) {
         throw new IllegalStateException("Not supported yet");
     }
 

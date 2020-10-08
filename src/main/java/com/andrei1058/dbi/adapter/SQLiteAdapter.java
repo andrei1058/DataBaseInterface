@@ -24,7 +24,7 @@ public class SQLiteAdapter implements DatabaseAdapter {
         try (ResultSet rs = connection.createStatement().executeQuery(query)) {
             if (rs.next()) {
                 Object result = rs.getObject(what.getName());
-                return result == null ? what.getDefaultValue() : what.fromResult(result);
+                return result == null ? what.getDefaultValue() : what.castResult(result);
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -42,12 +42,26 @@ public class SQLiteAdapter implements DatabaseAdapter {
     }
 
     @Override
-    public List<List<?>> selectColumn(Column<?> from, Table table, Operator<?> where) {
-        throw new IllegalStateException("Not implemented yet!");
+    public HashMap<Column<?>, ?> selectRow(Table table, Operator<?> where) {
+        HashMap<Column<?>, Object> results = new HashMap<>();
+        String query = "SELECT * FROM " + table.getName() + " WHERE " + where.toQuery() + ";";
+        try (ResultSet rs = connection.createStatement().executeQuery(query)) {
+            if (rs.next()) {
+                Object result = rs.getObject(table.getPrimaryKey().getName());
+                results.put(table.getPrimaryKey(), (result == null ? table.getPrimaryKey().getDefaultValue() : table.getPrimaryKey().castResult(result)));
+                for (Column<?> column : table.getColumns()) {
+                    result = rs.getObject(column.getName());
+                    results.put(column, (result == null ? column.getDefaultValue() : column.castResult(result)));
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return results;
     }
 
     @Override
-    public List<List<?>> selectColumn(Column<?> from, Table table, Operator<?> where, int start, int limit) {
+    public List<List<ColumnValue<?>>> selectRows(Column<?> from, Table table, Operator<?> where, int start, int limit) {
         throw new IllegalStateException("Not implemented yet!");
     }
 

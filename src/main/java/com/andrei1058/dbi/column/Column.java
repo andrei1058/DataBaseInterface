@@ -12,5 +12,5 @@ public interface Column<T> {
 
     Object toExport(Object value);
 
-    T fromResult(Object o);
+    T castResult(Object o);
 }

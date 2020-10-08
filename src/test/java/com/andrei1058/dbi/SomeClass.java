@@ -2,6 +2,7 @@ package com.andrei1058.dbi;
 
 import com.andrei1058.dbi.DatabaseAdapter;
 import com.andrei1058.dbi.adapter.SQLiteAdapter;
+import com.andrei1058.dbi.column.Column;
 import com.andrei1058.dbi.column.type.IntegerColumn;
 import com.andrei1058.dbi.column.type.UUIDColumn;
 import com.andrei1058.dbi.column.datavalue.SimpleValue;
@@ -12,9 +13,7 @@ import com.andrei1058.dbi.table.TableBuilder;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class SomeClass {
 
@@ -63,6 +62,18 @@ public class SomeClass {
         kills = databaseAdapter.select(killsColumn, player_stats, new EqualsOperator<>(primaryKey, testUUID));
         System.out.println("Kills: " + kills);
 
-        //
+        // select row
+        System.out.println("ROW SELECT -----------");
+        HashMap<Column<?>, ?> result = databaseAdapter.selectRow(player_stats, new EqualsOperator<>(primaryKey, testUUID));
+
+        for (Map.Entry<Column<?>, ?> entry : result.entrySet()){
+            if (entry.getKey().equals(primaryKey)){
+                UUID uuid = (UUID) entry.getKey().castResult(entry.getValue());
+                System.out.println(uuid);
+            } else if (entry.getKey().equals(killsColumn)){
+                kills = (Integer) entry.getKey().castResult(entry.getValue());
+                System.out.println(kills);
+            }
+        }
     }
 }

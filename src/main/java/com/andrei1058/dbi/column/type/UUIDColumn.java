@@ -33,7 +33,7 @@ public class UUIDColumn implements Column<UUID> {
     }
 
     @Override
-    public UUID fromResult(Object o) {
+    public UUID castResult(Object o) {
         return UUID.fromString((String) o);
     }
 

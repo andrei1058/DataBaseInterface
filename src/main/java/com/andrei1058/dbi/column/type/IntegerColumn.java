@@ -29,7 +29,7 @@ public class IntegerColumn implements Column<Integer> {
     }
 
     @Override
-    public Integer fromResult(Object o) {
+    public Integer castResult(Object o) {
         return (Integer) o;
     }
 

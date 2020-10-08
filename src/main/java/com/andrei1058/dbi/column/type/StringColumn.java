@@ -41,7 +41,7 @@ public class StringColumn implements Column<String> {
     }
 
     @Override
-    public String fromResult(Object o) {
+    public String castResult(Object o) {
         return o.toString();
     }
 }

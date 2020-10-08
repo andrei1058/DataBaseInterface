@@ -18,13 +18,13 @@ public interface DatabaseAdapter {
 
     <T> List<T> select(Column<T> from, Table table, Operator<?> where, int start, int limit);
 
-    List<List<?>> selectColumn(Column<?> from, Table table, Operator<?> where);
+    HashMap<Column<?>, ?> selectRow(Table table, Operator<?> where);
 
-    default List<List<?>> selectColumn(Column<?> from, Table table, Operator<?> where, int limit) {
-        return selectColumn(from, table, where, 0, limit);
+    default List<List<ColumnValue<?>>> selectRows(Column<?> from, Table table, Operator<?> where, int limit) {
+        return selectRows(from, table, where, 0, limit);
     }
 
-    List<List<?>> selectColumn(Column<?> from, Table table, Operator<?> where, int start, int limit);
+    List<List<ColumnValue<?>>> selectRows(Column<?> from, Table table, Operator<?> where, int start, int limit);
 
     default void insert(Table table, List<ColumnValue<?>> values) {
         insert(table, values, null);

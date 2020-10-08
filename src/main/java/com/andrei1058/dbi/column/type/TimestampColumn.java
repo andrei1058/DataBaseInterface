@@ -41,7 +41,7 @@ public class TimestampColumn implements Column<Timestamp> {
     }
 
     @Override
-    public Timestamp fromResult(Object o) {
+    public Timestamp castResult(Object o) {
         return (Timestamp) o;
     }
 }
