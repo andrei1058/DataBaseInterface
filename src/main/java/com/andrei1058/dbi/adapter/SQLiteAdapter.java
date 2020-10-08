@@ -96,7 +96,7 @@ public class SQLiteAdapter implements DatabaseAdapter {
             for (int i = 0; i < table.getColumns().size(); i++) {
                 Column<?> c = table.getColumns().get(i);
                 sql.append(" ").append(c.getName()).append(" ").append(c.getSqlType().getSqlite())
-                        .append(c.getSize() > 0 ? "(" + c.getSize() + ")" : "").append(" DEFAULT ").append(c.getDefaultValue());
+                        .append(c.getSize() > 0 ? "(" + c.getSize() + ")" : "").append(" DEFAULT ").append(c.toExport(c.getDefaultValue()));
                 if (i < table.getColumns().size() - 1) {
                     sql.append(",");
                 }

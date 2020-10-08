@@ -25,7 +25,7 @@ public class IntegerColumn implements Column<Integer> {
 
     @Override
     public Object toExport(Object o) {
-        return o;
+        return o == null ? 0 : o;
     }
 
     @Override

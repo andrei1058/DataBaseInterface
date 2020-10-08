@@ -37,7 +37,7 @@ public class DateColumn implements Column<Date> {
 
     @Override
     public Object toExport(Object value) {
-        return value instanceof Date ? value : value;
+        return value == null ? null : value instanceof Date ? value : value;
     }
 
     @Override

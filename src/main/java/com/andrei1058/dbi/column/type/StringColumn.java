@@ -37,7 +37,7 @@ public class StringColumn implements Column<String> {
 
     @Override
     public Object toExport(Object value) {
-        return value.toString();
+        return value == null ? "" : value.toString();
     }
 
     @Override

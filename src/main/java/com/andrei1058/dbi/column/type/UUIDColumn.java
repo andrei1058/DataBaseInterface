@@ -29,7 +29,7 @@ public class UUIDColumn implements Column<UUID> {
 
     @Override
     public Object toExport(Object o) {
-        return o.toString();
+        return o == null ? null : o.toString();
     }
 
     @Override
