@@ -42,12 +42,12 @@ public class SQLiteAdapter implements DatabaseAdapter {
     }
 
     @Override
-    public List<List<?>> selectAll(Column<?> from, Table table, Operator<?> where) {
+    public List<List<?>> selectColumn(Column<?> from, Table table, Operator<?> where) {
         throw new IllegalStateException("Not implemented yet!");
     }
 
     @Override
-    public List<List<?>> selectAll(Column<?> from, Table table, Operator<?> where, int start, int limit) {
+    public List<List<?>> selectColumn(Column<?> from, Table table, Operator<?> where, int start, int limit) {
         throw new IllegalStateException("Not implemented yet!");
     }
 
