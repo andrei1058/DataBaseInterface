@@ -38,6 +38,6 @@ public class UUIDColumn implements Column<UUID> {
     }
 
     public Integer getSize() {
-        return null;
+        return 36;
     }
 }

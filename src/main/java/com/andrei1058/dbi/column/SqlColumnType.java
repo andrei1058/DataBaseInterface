@@ -4,7 +4,8 @@ public enum SqlColumnType {
 
     INT("INT", "INTEGER"),
     STRING("VARCHAR", "VARCHAR"),
-    DATE("DATE", "DATE");
+    DATE("DATE", "DATE"),
+    TIMESTAMP("TIMESTAMP", "DATETIME");
 
     private final String mysql;
     private final String sqlite;

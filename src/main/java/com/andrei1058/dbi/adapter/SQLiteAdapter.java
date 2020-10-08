@@ -92,11 +92,11 @@ public class SQLiteAdapter implements DatabaseAdapter {
             if (table.getColumns().isEmpty()) return;
             Column<?> pk = table.getPrimaryKey();
             StringBuilder sql = new StringBuilder("create table " + table.getName() + " (" + pk.getName() + " " + pk.getSqlType().getSqlite()
-                    + " PRIMARY KEY" + (table.isAutoIncrementPK() ? " AUTOINCREMENT" : "") + ",");
+                    + (pk.getSize() > 0 ? "(" + pk.getSize() + ")" : "") + " PRIMARY KEY" + (table.isAutoIncrementPK() ? " AUTOINCREMENT" : "") + ",");
             for (int i = 0; i < table.getColumns().size(); i++) {
                 Column<?> c = table.getColumns().get(i);
                 sql.append(" ").append(c.getName()).append(" ").append(c.getSqlType().getSqlite())
-                        .append(c.getSize() > 0 ? "(" + c.getSize() + ")" : "").append(" DEFAULT ").append(c.toExport(c.getDefaultValue()));
+                        .append(c.getSize() > 0 ? "(" + c.getSize() + ") " : " ").append("DEFAULT '").append(c.toExport(c.getDefaultValue())).append("'");
                 if (i < table.getColumns().size() - 1) {
                     sql.append(",");
                 }
