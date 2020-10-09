@@ -105,7 +105,7 @@ public class SQLiteAdapter implements DatabaseAdapter {
             }
             if (table.getColumns().isEmpty()) return;
             Column<?> pk = table.getPrimaryKey();
-            StringBuilder sql = new StringBuilder("create table " + table.getName() + " (" + pk.getName() + " " + pk.getSqlType().getSqlite()
+            StringBuilder sql = new StringBuilder("create table if not exists " + table.getName() + " (" + pk.getName() + " " + pk.getSqlType().getSqlite()
                     + (pk.getSize() > 0 ? "(" + pk.getSize() + ")" : "") + " PRIMARY KEY" + (table.isAutoIncrementPK() ? " AUTOINCREMENT" : "") + ",");
             for (int i = 0; i < table.getColumns().size(); i++) {
                 Column<?> c = table.getColumns().get(i);
