@@ -101,6 +101,17 @@ public class HikariAdapter implements DatabaseAdapter {
         throw new IllegalStateException("Not supported yet");
     }
 
+    @Override
+    public void disable() {
+        if (connection == null) return;
+        try {
+            connection.close();
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+        dataSource.close();
+    }
+
     public Connection getConnection() {
         return connection;
     }

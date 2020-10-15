@@ -38,6 +38,8 @@ public interface DatabaseAdapter {
 
     void set(Table table, HashMap<Column<?>, ColumnValue<?>> values, Operator<?> where);
 
+    void disable();
+
     enum InsertFallback {
         /**
          * Replace existing data on primary key violation/ duplication.

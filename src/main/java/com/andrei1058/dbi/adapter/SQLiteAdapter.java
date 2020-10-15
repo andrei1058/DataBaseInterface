@@ -137,4 +137,14 @@ public class SQLiteAdapter implements DatabaseAdapter {
     public void set(Table table, HashMap<Column<?>, ColumnValue<?>> values, Operator<?> where) {
         throw new IllegalStateException("Not implemented yet!");
     }
+
+    @Override
+    public void disable() {
+        if (connection == null) return;
+        try {
+            connection.close();
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+    }
 }
