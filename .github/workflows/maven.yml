@@ -24,4 +24,4 @@ jobs:
           FTP_USR: ${{ secrets.FTP_USR }}
           FTP_PASS: ${{ secrets.FTP_PASS }}
       - name: Build with Maven
-        run: mvn clean deploy --file pom.xml -Djavadocs.username=${{ secrets.FTP_USR }} -Djavadocs.password=${{ secrets.FTP_PASS }} -X
+        run: mvn clean deploy --file pom.xml -s ci_settings.xml -Djavadocs.username=${{ secrets.FTP_USR }} -Djavadocs.password=${{ secrets.FTP_PASS }} -X
