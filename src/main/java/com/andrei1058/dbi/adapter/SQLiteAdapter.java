@@ -116,7 +116,6 @@ public class SQLiteAdapter implements DatabaseAdapter {
                 }
             }
             sql.append(");");
-            System.out.println(sql.toString());
             statement.executeUpdate(sql.toString());
         } catch (SQLException exception) {
             exception.printStackTrace();

@@ -9,12 +9,12 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.jetbrains.annotations.Nullable;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+@SuppressWarnings("unused")
 public class HikariAdapter implements DatabaseAdapter {
 
     private final HikariDataSource dataSource;
@@ -30,7 +30,7 @@ public class HikariAdapter implements DatabaseAdapter {
         hikariConfig.setPoolName(poolName);
 
         hikariConfig.setMaximumPoolSize(poolSize);
-        hikariConfig.setMaxLifetime(maxLifeTime * 1000);
+        hikariConfig.setMaxLifetime(maxLifeTime * 1000L);
 
         hikariConfig.setJdbcUrl("jdbc:mysql://" + host + ":" + port + "/" + dbName);
 
@@ -63,7 +63,18 @@ public class HikariAdapter implements DatabaseAdapter {
 
     @Override
     public <T> T select(Column<T> from, Table table, Operator<?> where) {
-        throw new IllegalStateException("Not supported yet");
+        String query = "SELECT " + from.getName() + " FROM " + table.getName() + " WHERE " + where.toQuery() + ";";
+        try (Connection connection = dataSource.getConnection()) {
+            try (ResultSet rs = connection.createStatement().executeQuery(query)) {
+                if (rs.next()) {
+                    Object result = rs.getObject(from.getName());
+                    return result == null ? from.getDefaultValue() : from.castResult(result);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return from.getDefaultValue();
     }
 
     @Override
@@ -73,7 +84,23 @@ public class HikariAdapter implements DatabaseAdapter {
 
     @Override
     public HashMap<Column<?>, ?> selectRow(Table table, Operator<?> where) {
-        throw new IllegalStateException("Not supported yet");
+        HashMap<Column<?>, Object> results = new HashMap<>();
+        String query = "SELECT * FROM " + table.getName() + " WHERE " + where.toQuery() + ";";
+        try (Connection connection = dataSource.getConnection()) {
+            try (ResultSet rs = connection.createStatement().executeQuery(query)) {
+                if (rs.next()) {
+                    Object result = rs.getObject(table.getPrimaryKey().getName());
+                    results.put(table.getPrimaryKey(), (result == null ? table.getPrimaryKey().getDefaultValue() : table.getPrimaryKey().castResult(result)));
+                    for (Column<?> column : table.getColumns()) {
+                        result = rs.getObject(column.getName());
+                        results.put(column, (result == null ? column.getDefaultValue() : column.castResult(result)));
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return results;
     }
 
     @Override
@@ -83,17 +110,75 @@ public class HikariAdapter implements DatabaseAdapter {
 
     @Override
     public void insert(Table table, List<ColumnValue<?>> values, @Nullable InsertFallback onFail) {
-        throw new IllegalStateException("Not supported yet");
+        if (table.getColumns().isEmpty()) {
+            //todo throw empty table exception
+            return;
+        }
+        StringBuilder firstPart = new StringBuilder("INSERT INTO " + table.getName() + "(");
+        StringBuilder secondPart = new StringBuilder("VALUES(");
+        for (int i = 0; i < values.size(); i++) {
+            ColumnValue<?> value = values.get(i);
+            firstPart.append(value.getColumn().getName());
+            secondPart.append("?");
+            if (i < values.size() - 1) {
+                firstPart.append(",");
+                secondPart.append(",");
+            } else {
+                firstPart.append(") ");
+                secondPart.append(");");
+            }
+        }
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement ps = connection.prepareStatement(firstPart.append(secondPart).toString())) {
+                for (int i = 0; i < values.size(); i++) {
+                    ColumnValue<?> value = values.get(i);
+                    ps.setObject(i + 1, value.getValue());
+                }
+                ps.executeUpdate();
+            }
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
     }
 
     @Override
     public void createTable(Table table, boolean drop) {
-        throw new IllegalStateException("Not supported yet");
+        try (Connection connection = dataSource.getConnection()) {
+            try (Statement statement = connection.createStatement()) {
+                statement.setQueryTimeout(30);
+                if (drop) {
+                    statement.executeUpdate("drop table if exists " + table.getName() + ";");
+                }
+                if (table.getColumns().isEmpty()) return;
+                Column<?> pk = table.getPrimaryKey();
+                StringBuilder sql = new StringBuilder("create table if not exists " + table.getName() + " (" + pk.getName() + " " + pk.getSqlType().getSqlite()
+                        + (pk.getSize() > 0 ? "(" + pk.getSize() + ")" : "") + " PRIMARY KEY" + (table.isAutoIncrementPK() ? " AUTOINCREMENT" : "") + ",");
+                for (int i = 0; i < table.getColumns().size(); i++) {
+                    Column<?> c = table.getColumns().get(i);
+                    sql.append(" ").append(c.getName()).append(" ").append(c.getSqlType().getSqlite())
+                            .append(c.getSize() > 0 ? "(" + c.getSize() + ") " : " ").append("DEFAULT '").append(c.toExport(c.getDefaultValue())).append("'");
+                    if (i < table.getColumns().size() - 1) {
+                        sql.append(",");
+                    }
+                }
+                sql.append(");");
+                statement.executeUpdate(sql.toString());
+            }
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
     }
 
     @Override
     public void set(Table table, Column<?> column, ColumnValue<?> value, Operator<?> where) {
-        throw new IllegalStateException("Not supported yet");
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement("UPDATE `" + table.getName() + "` SET `" + column.getName() + "`=? WHERE " + where.toQuery())) {
+                statement.setObject(1, value.getColumn().toExport(value.getValue()));
+                statement.executeUpdate();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     @Override

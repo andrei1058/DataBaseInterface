@@ -6,6 +6,7 @@ public class SomeClass {
 
         // database interface
         DatabaseAdapter databaseAdapter = new SQLiteAdapter();
+        // DatabaseAdapter databaseAdapter = new HikariAdapter(poolName, poolSize, maxLifeTime, host, port, dbName, username, password, verifyCertificate, useSSL);
 
         // columns
         UUIDColumn primaryKey = new UUIDColumn("player_uuid", null);
