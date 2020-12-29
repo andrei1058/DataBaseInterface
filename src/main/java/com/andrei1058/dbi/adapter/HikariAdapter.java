@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("unused")
@@ -151,18 +152,24 @@ public class HikariAdapter implements DatabaseAdapter {
                 }
                 if (table.getColumns().isEmpty()) return;
                 Column<?> pk = table.getPrimaryKey();
-                StringBuilder sql = new StringBuilder("create table if not exists " + table.getName() + " (" + pk.getName() + " " + pk.getSqlType().getSqlite()
-                        + (pk.getSize() > 0 ? "(" + pk.getSize() + ")" : "") + " PRIMARY KEY" + (table.isAutoIncrementPK() ? " AUTOINCREMENT" : "") + ",");
+                StringBuilder sql = new StringBuilder("CREATE TABLE IF NOT EXISTS " + table.getName() + " (" + pk.getName() + " " + pk.getSqlType().getSqlite()
+                        + (pk.getSize() > 0 ? "(" + pk.getSize() + ")" : "") + " PRIMARY KEY" + (table.isAutoIncrementPK() ? " AUTO_INCREMENT" : "") + ",");
                 for (int i = 0; i < table.getColumns().size(); i++) {
                     Column<?> c = table.getColumns().get(i);
                     sql.append(" ").append(c.getName()).append(" ").append(c.getSqlType().getSqlite())
-                            .append(c.getSize() > 0 ? "(" + c.getSize() + ") " : " ").append("DEFAULT '").append(c.toExport(c.getDefaultValue())).append("'");
+                            .append(c.getSize() > 0 ? "(" + c.getSize() + ") " : " ");
+                    // do not append ' if null
+                    if (c.toExport(c.getDefaultValue()) == null) {
+                        sql.append("DEFAULT NULL");
+                    } else {
+                        sql.append("DEFAULT '").append(c.toExport(c.getDefaultValue())).append("'");
+                    }
                     if (i < table.getColumns().size() - 1) {
                         sql.append(",");
                     }
                 }
                 sql.append(");");
-                statement.executeUpdate(sql.toString());
+                statement.execute(sql.toString());
             }
         } catch (SQLException exception) {
             exception.printStackTrace();
@@ -183,7 +190,25 @@ public class HikariAdapter implements DatabaseAdapter {
 
     @Override
     public void set(Table table, HashMap<Column<?>, ColumnValue<?>> values, Operator<?> where) {
-        throw new IllegalStateException("Not supported yet");
+        try (Connection connection = dataSource.getConnection()) {
+            StringBuilder sql = new StringBuilder("UPDATE `" + table.getName() + "` SET ");
+            for (Column<?> column : values.keySet()) {
+                sql.append("`").append(column.getName()).append("`=?,");
+            }
+            // remove last comma from sql
+            sql.deleteCharAt(sql.length() - 1);
+            sql.append(" WHERE ").append(where.toQuery()).append(";");
+
+            try (PreparedStatement statement = connection.prepareStatement(sql.toString())) {
+                int index = 0;
+                for (ColumnValue<?> entry : values.values()) {
+                    statement.setObject(++index, entry.getColumn().toExport(entry.getValue()));
+                }
+                statement.executeUpdate();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     @Override

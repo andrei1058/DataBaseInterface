@@ -134,7 +134,24 @@ public class SQLiteAdapter implements DatabaseAdapter {
 
     @Override
     public void set(Table table, HashMap<Column<?>, ColumnValue<?>> values, Operator<?> where) {
-        throw new IllegalStateException("Not implemented yet!");
+        StringBuilder sql = new StringBuilder("UPDATE `" + table.getName() + "` SET ");
+        for (Column<?> column : values.keySet()) {
+            sql.append("`").append(column.getName()).append("`=?,");
+        }
+        // remove last comma from sql
+        sql.deleteCharAt(sql.length() - 1);
+        sql.append(" WHERE ").append(where.toQuery()).append(";");
+
+        try (PreparedStatement statement = connection.prepareStatement(sql.toString())) {
+            int index = 0;
+            for (ColumnValue<?> entry : values.values()) {
+                statement.setObject(++index, entry.getColumn().toExport(entry.getValue()));
+            }
+            statement.executeUpdate();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     @Override
