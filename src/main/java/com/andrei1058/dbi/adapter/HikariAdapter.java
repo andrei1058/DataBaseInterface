@@ -129,13 +129,14 @@ public class HikariAdapter implements DatabaseAdapter {
                 secondPart.append(");");
             }
         }
+        firstPart.append(secondPart);
         try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement ps = connection.prepareStatement(firstPart.append(secondPart).toString())) {
+            try (PreparedStatement ps = connection.prepareStatement(firstPart.toString())) {
                 for (int i = 0; i < values.size(); i++) {
                     ColumnValue<?> value = values.get(i);
-                    ps.setObject(i + 1, value.getValue());
+                    ps.setObject(i + 1, value.getColumn().toExport(value.getValue()));
                 }
-                ps.executeUpdate();
+                ps.execute();
             }
         } catch (SQLException exception) {
             exception.printStackTrace();

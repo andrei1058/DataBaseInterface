@@ -88,7 +88,7 @@ public class SQLiteAdapter implements DatabaseAdapter {
         try (PreparedStatement ps = connection.prepareStatement(firstPart.append(secondPart).toString())) {
             for (int i = 0; i < values.size(); i++) {
                 ColumnValue<?> value = values.get(i);
-                ps.setObject(i + 1, value.getValue());
+                ps.setObject(i + 1, value.getColumn().toExport(value.getValue()));
             }
             ps.executeUpdate();
         } catch (SQLException exception) {
