@@ -5,6 +5,7 @@ import com.andrei1058.dbi.column.SqlColumnType;
 
 import java.util.Date;
 
+@SuppressWarnings("unused")
 public class DateColumn implements Column<Date> {
 
     private final String name;
@@ -42,6 +43,6 @@ public class DateColumn implements Column<Date> {
 
     @Override
     public Date castResult(Object o) {
-        return (Date) o;
+        return o == null ? null : o instanceof Date ? (Date) o : null;
     }
 }
