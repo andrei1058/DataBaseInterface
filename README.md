@@ -1,5 +1,5 @@
 # DataBaseInterface
-This is an interface between different database adapters. It currently supports SQLite and MySQL (hikari cp).
+This is an interface between different database adapters. In few words you can use the same code between different db sources. It currently supports SQLite and MySQL (hikari cp).
 
 # Dependencies
 - [SQLite](https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc)
