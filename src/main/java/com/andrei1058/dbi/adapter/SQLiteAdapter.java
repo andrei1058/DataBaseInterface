@@ -63,13 +63,33 @@ public class SQLiteAdapter implements DatabaseAdapter {
     }
 
     @Override
+    public List<List<ColumnValue<?>>> selectRows(List<Column<?>> selectWhat, Table table, Operator<?> where) {
+        List<List<ColumnValue<?>>> results = new LinkedList<>();
+        String query = "SELECT * FROM " + table.getName() + " WHERE " + where.toQuery() + ";";
+        try (ResultSet rs = connection.createStatement().executeQuery(query)) {
+            if (rs.next()) {
+                List<ColumnValue<?>> row = new LinkedList<>();
+                for (Column<?> column : selectWhat) {
+                    Object result = rs.getObject(column.getName());
+                    //noinspection unchecked
+                    row.add(new SimpleValue<>((Column<Object>) column, (result == null ? column.getDefaultValue() : column.castResult(result))));
+                }
+                results.add(row);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return results;
+    }
+
+    @Override
     public List<List<ColumnValue<?>>> selectRows(List<Column<?>> selectWhat, Table table, Operator<?> where, int start, int limit) {
         List<List<ColumnValue<?>>> results = new LinkedList<>();
         String query = "SELECT * FROM " + table.getName() + " WHERE " + where.toQuery() + " LIMIT " + start + "," + limit + ";";
         try (ResultSet rs = connection.createStatement().executeQuery(query)) {
             if (rs.next()) {
                 List<ColumnValue<?>> row = new LinkedList<>();
-                for (Column<?> column : selectWhat){
+                for (Column<?> column : selectWhat) {
                     Object result = rs.getObject(column.getName());
                     //noinspection unchecked
                     row.add(new SimpleValue<>((Column<Object>) column, (result == null ? column.getDefaultValue() : column.castResult(result))));

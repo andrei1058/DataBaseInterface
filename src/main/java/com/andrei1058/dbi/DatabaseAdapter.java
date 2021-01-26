@@ -20,6 +20,8 @@ public interface DatabaseAdapter {
 
     HashMap<Column<?>, ?> selectRow(Table table, Operator<?> where);
 
+    List<List<ColumnValue<?>>> selectRows(List<Column<?>> selectWhat, Table table, Operator<?> where);
+
     default List<List<ColumnValue<?>>> selectRows(List<Column<?>> selectWhat, Table table, Operator<?> where, int limit) {
         return selectRows(selectWhat, table, where, 0, limit);
     }

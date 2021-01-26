@@ -12,7 +12,6 @@ import org.jetbrains.annotations.Nullable;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("unused")
@@ -102,6 +101,11 @@ public class HikariAdapter implements DatabaseAdapter {
             ex.printStackTrace();
         }
         return results;
+    }
+
+    @Override
+    public List<List<ColumnValue<?>>> selectRows(List<Column<?>> selectWhat, Table table, Operator<?> where) {
+        throw new IllegalStateException("Not supported yet");
     }
 
     @Override
