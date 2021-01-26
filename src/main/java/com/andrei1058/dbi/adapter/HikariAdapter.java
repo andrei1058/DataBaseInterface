@@ -105,7 +105,7 @@ public class HikariAdapter implements DatabaseAdapter {
     }
 
     @Override
-    public List<List<ColumnValue<?>>> selectRows(Column<?> from, Table table, Operator<?> where, int start, int limit) {
+    public List<List<ColumnValue<?>>> selectRows(List<Column<?>> selectWhat, Table table, Operator<?> where, int start, int limit) {
         throw new IllegalStateException("Not supported yet");
     }
 

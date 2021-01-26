@@ -3,11 +3,13 @@ package com.andrei1058.dbi.adapter;
 import com.andrei1058.dbi.DatabaseAdapter;
 import com.andrei1058.dbi.column.Column;
 import com.andrei1058.dbi.column.ColumnValue;
+import com.andrei1058.dbi.column.datavalue.SimpleValue;
 import com.andrei1058.dbi.operator.Operator;
 import com.andrei1058.dbi.table.Table;
 
 import java.sql.*;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 public class SQLiteAdapter implements DatabaseAdapter {
@@ -61,8 +63,23 @@ public class SQLiteAdapter implements DatabaseAdapter {
     }
 
     @Override
-    public List<List<ColumnValue<?>>> selectRows(Column<?> from, Table table, Operator<?> where, int start, int limit) {
-        throw new IllegalStateException("Not implemented yet!");
+    public List<List<ColumnValue<?>>> selectRows(List<Column<?>> selectWhat, Table table, Operator<?> where, int start, int limit) {
+        List<List<ColumnValue<?>>> results = new LinkedList<>();
+        String query = "SELECT * FROM " + table.getName() + " WHERE " + where.toQuery() + " LIMIT " + start + "," + limit + ";";
+        try (ResultSet rs = connection.createStatement().executeQuery(query)) {
+            if (rs.next()) {
+                List<ColumnValue<?>> row = new LinkedList<>();
+                for (Column<?> column : selectWhat){
+                    Object result = rs.getObject(column.getName());
+                    //noinspection unchecked
+                    row.add(new SimpleValue<>((Column<Object>) column, (result == null ? column.getDefaultValue() : column.castResult(result))));
+                }
+                results.add(row);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return results;
     }
 
     @Override

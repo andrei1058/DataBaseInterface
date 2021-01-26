@@ -20,11 +20,11 @@ public interface DatabaseAdapter {
 
     HashMap<Column<?>, ?> selectRow(Table table, Operator<?> where);
 
-    default List<List<ColumnValue<?>>> selectRows(Column<?> from, Table table, Operator<?> where, int limit) {
-        return selectRows(from, table, where, 0, limit);
+    default List<List<ColumnValue<?>>> selectRows(List<Column<?>> selectWhat, Table table, Operator<?> where, int limit) {
+        return selectRows(selectWhat, table, where, 0, limit);
     }
 
-    List<List<ColumnValue<?>>> selectRows(Column<?> from, Table table, Operator<?> where, int start, int limit);
+    List<List<ColumnValue<?>>> selectRows(List<Column<?>> selectWhat, Table table, Operator<?> where, int start, int limit);
 
     default void insert(Table table, List<ColumnValue<?>> values) {
         insert(table, values, null);
