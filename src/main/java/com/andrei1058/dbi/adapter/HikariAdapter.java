@@ -217,6 +217,21 @@ public class HikariAdapter implements DatabaseAdapter {
     }
 
     @Override
+    public <T> T getLastId(Column<T> primaryKey) {
+        try (ResultSet rs = connection.createStatement().executeQuery("SELECT LAST_INSERT_ID();")) {
+            if (rs.next()){
+                Object result = rs.getObject(1);
+                if (result != null){
+                    return primaryKey.castResult(result);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
     public void disable() {
         if (connection == null) return;
         try {

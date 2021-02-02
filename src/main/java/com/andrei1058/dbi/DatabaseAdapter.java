@@ -40,6 +40,8 @@ public interface DatabaseAdapter {
 
     void set(Table table, HashMap<Column<?>, ColumnValue<?>> values, Operator<?> where);
 
+    <T> T getLastId(Column<T> primaryKey);
+
     void disable();
 
     enum InsertFallback {

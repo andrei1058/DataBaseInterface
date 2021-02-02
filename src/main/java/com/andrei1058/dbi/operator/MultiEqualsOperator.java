@@ -15,11 +15,11 @@ public class MultiEqualsOperator implements Operator<Void> {
     public String toQuery() {
         StringBuilder stringBuilder = new StringBuilder();
         for (ColumnValue<?> cv : columnValues) {
-            stringBuilder.append(cv.getColumn().getName()).append("='")
-                    .append(cv.getColumn().toExport(cv.getValue())).append("'").append(",");
+            stringBuilder.append(cv.getColumn().getName()).append("= '")
+                    .append(cv.getColumn().toExport(cv.getValue())).append("'").append(" ").append("AND").append(" ");
         }
-        if (stringBuilder.charAt(stringBuilder.length() - 1) == ',') {
-            stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+        if (stringBuilder.toString().endsWith(" AND ")) {
+            stringBuilder.replace(stringBuilder.length() - 5, stringBuilder.length(), "");
         }
         return stringBuilder.toString();
     }

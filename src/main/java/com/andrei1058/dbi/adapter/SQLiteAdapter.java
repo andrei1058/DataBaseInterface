@@ -66,6 +66,7 @@ public class SQLiteAdapter implements DatabaseAdapter {
     public List<List<ColumnValue<?>>> selectRows(List<Column<?>> selectWhat, Table table, Operator<?> where) {
         List<List<ColumnValue<?>>> results = new LinkedList<>();
         String query = "SELECT * FROM " + table.getName() + " WHERE " + where.toQuery() + ";";
+        System.out.println(query);
         try (ResultSet rs = connection.createStatement().executeQuery(query)) {
             if (rs.next()) {
                 List<ColumnValue<?>> row = new LinkedList<>();
@@ -77,7 +78,7 @@ public class SQLiteAdapter implements DatabaseAdapter {
                 results.add(row);
             }
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            //ex.printStackTrace();
         }
         return results;
     }
@@ -189,6 +190,21 @@ public class SQLiteAdapter implements DatabaseAdapter {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    @Override
+    public <T> T getLastId(Column<T> primaryKey) {
+        try (ResultSet rs = connection.createStatement().executeQuery("SELECT last_insert_rowid();")) {
+            if (rs.next()){
+                Object result = rs.getObject(1);
+                if (result != null){
+                    return primaryKey.castResult(result);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return null;
     }
 
     @Override
